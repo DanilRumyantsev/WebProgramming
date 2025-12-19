@@ -1,23 +1,27 @@
 import Header from '../components/layout/Header.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import ProductSection from '../components/ProductSection.jsx';
+import {axiosInstance} from "@/api/axiosInstance.js";
 
 const fetchPopularProducts = async () => {
-    const res = await fetch('/api/products');
-    if (!res.ok) throw new Error('Не удалось загрузить товары');
-    const data = await res.json();
-    return data.data || data;
+    try {
+        const res = await axiosInstance.get('/products');
+        return res.data.data;
+    } catch (error) {
+        const msg = error.response?.data?.message || 'Не удалось загрузить товары';
+        throw new Error(msg);
+    }
 };
 
 const saleProducts = [
-    { id: 101, name: 'Наушники со скидкой', price: 2490, image: 'https://picsum.photos/300/200?random=11' },
-    { id: 102, name: 'Клавиатура -30%', price: 3990, image: 'https://picsum.photos/300/200?random=12' },
+    {id: 101, name: 'Наушники со скидкой', price: 2490, image: 'https://picsum.photos/300/200?random=11'},
+    {id: 102, name: 'Клавиатура -30%', price: 3990, image: 'https://picsum.photos/300/200?random=12'},
 ];
 
 export default function HomePage() {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            <Header />
+            <Header/>
 
             <main className="flex-grow container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-10 text-center">
@@ -50,7 +54,7 @@ export default function HomePage() {
                 />
             </main>
 
-            <Footer />
+            <Footer/>
         </div>
     );
 }

@@ -1,14 +1,32 @@
-// src/services/GroupService.js
+import {GroupRepository} from "../repositories/GroupRepository.js";
+
 export class GroupService {
+    /**
+     * Get all product groups.
+     *
+     * @returns {Promise<Model<any, TModelAttributes>[]>}
+     */
     static async getAllGroups() {
         return GroupRepository.findAll();
     }
 
+    /**
+     * Create product group.
+     *
+     * @param data
+     * @returns {Promise<CreateOptions<Attributes<Model>> extends ({returning: false} | {ignoreDuplicates: true}) ? void : Model<any, TModelAttributes>>}
+     */
     static async createGroup(data) {
-        // ✅ Уникальность проверит БД (через unique: true в миграции)
         return GroupRepository.create(data);
     }
 
+    /**
+     * Update product group.
+     *
+     * @param id
+     * @param data
+     * @returns {Promise<*|null>}
+     */
     static async updateGroup(id, data) {
         const existing = await GroupRepository.findById(id);
         if (!existing) {
@@ -17,13 +35,13 @@ export class GroupService {
         return GroupRepository.update(id, data);
     }
 
+    /**
+     * Delete product group.
+     *
+     * @param id
+     * @returns {Promise<boolean>}
+     */
     static async deleteGroup(id) {
-        // 🔹 Опционально: проверить, есть ли товары в группе
-        // const productCount = await ProductRepository.countByGroupId(id);
-        // if (productCount > 0) {
-        //   throw new Error('Cannot delete group with assigned products');
-        // }
-
         return GroupRepository.delete(id);
     }
 }

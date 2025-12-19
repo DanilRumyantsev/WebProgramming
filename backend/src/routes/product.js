@@ -1,7 +1,6 @@
-// src/routes/product.js
-import { Router } from 'express';
-import { ProductController } from '../controllers/ProductController.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {Router} from 'express';
+import {ProductController} from '../controllers/ProductController.js';
+import {authMiddleware} from '../middleware/auth.js';
 
 const router = Router();
 

@@ -1,6 +1,5 @@
-// src/pages/ProductsManagePage.jsx
-import { useState, useEffect, useCallback } from 'react';
-import { ProductService } from '@/services/ProductService.js';
+import {useState, useEffect, useCallback} from 'react';
+import {ProductService} from '@/services/ProductService.js';
 import Header from '@/assets/components/layout/Header.jsx';
 import Footer from '@/assets/components/layout/Footer.jsx';
 import ProductModal from '@/assets/components/modals/ProductModal.jsx';
@@ -42,6 +41,7 @@ export default function ProductsManagePage() {
                 await ProductService.create(data);
             }
             await loadProducts();
+            setIsModalOpen(false);
         } catch (err) {
             alert('Ошибка сохранения: ' + err.message);
         }
@@ -59,14 +59,14 @@ export default function ProductsManagePage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            <Header />
+            <Header/>
 
             <main className="flex-grow container mx-auto px-4 py-8">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Управление товарами</h1>
                     <button
                         onClick={openCreateModal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="px-4 py-2 bg-black text-white rounded-md hover:bg-stone-700 transition cursor-pointer"
                     >
                         + Добавить товар
                     </button>
@@ -85,15 +85,15 @@ export default function ProductsManagePage() {
                             >
                                 <div className="h-48 overflow-hidden">
                                     <img
-                                        src={product.image || 'https://via.placeholder.com/300x200?text=–'}
+                                        src={product.image}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
-                                        onError={(e) => (e.target.src = 'https://via.placeholder.com/300x200?text=Broken')}
                                     />
                                 </div>
                                 <div className="p-4">
                                     <h3 className="font-semibold text-gray-900 line-clamp-2">{product.name}</h3>
-                                    <p className="mt-1 text-lg font-bold text-blue-600">
+                                    <hr className="text-stone-500"></hr>
+                                    <p className="mt-1 text-lg font-bold text-black">
                                         {new Intl.NumberFormat('ru-RU', {
                                             style: 'currency',
                                             currency: 'RUB',
@@ -106,13 +106,13 @@ export default function ProductsManagePage() {
                                     <div className="mt-4 flex gap-2">
                                         <button
                                             onClick={() => openEditModal(product)}
-                                            className="text-sm text-blue-600 hover:underline"
+                                            className="text-sm text-white bg-black hover:bg-stone-700 transition cursor-pointer p-2 rounded-xl"
                                         >
                                             Редактировать
                                         </button>
                                         <button
                                             onClick={() => handleDelete(product.id, product.name)}
-                                            className="text-sm text-red-600 hover:underline"
+                                            className="text-sm text-white bg-red-600 hover:bg-red-400 transition cursor-pointer p-2 rounded-xl"
                                         >
                                             Удалить
                                         </button>
@@ -123,7 +123,6 @@ export default function ProductsManagePage() {
                     </div>
                 )}
 
-                {/* Подключаем модалку */}
                 <ProductModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
@@ -131,7 +130,7 @@ export default function ProductsManagePage() {
                     initialData={editingProduct}
                 />
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

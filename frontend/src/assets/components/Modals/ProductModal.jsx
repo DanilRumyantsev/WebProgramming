@@ -1,8 +1,7 @@
-// src/components/modals/ProductModal.jsx
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { ProductGroupService } from '@/services/ProductGroupService.js';
+import {useState, useEffect, useRef, useCallback} from 'react';
+import {ProductGroupService} from '@/services/ProductGroupService.js';
 
-export default function ProductModal({ isOpen, onClose, onSubmit, initialData = null }) {
+export default function ProductModal({isOpen, onClose, onSubmit, initialData = null}) {
     const [form, setForm] = useState({
         id: null,
         name: '',
@@ -14,54 +13,48 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
     const [loadingGroups, setLoadingGroups] = useState(true);
     const [uploading, setUploading] = useState(false);
 
-    // Refs
     const dropRef = useRef(null);
     const fileInputRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
 
-    // ——— Загрузка групп ———
     useEffect(() => {
-        const loadGroups = async () => {
+        if (!isOpen) return;
+
+        const initModal = async () => {
+            let groupsArray = [];
             try {
                 const response = await ProductGroupService.getAll();
-                // ✅ Защита: бэкенд отдаёт { groups: [...] }
-                const groupsArray = Array.isArray(response?.groups) ? response.groups : [];
+                groupsArray = Array.isArray(response?.groups) ? response.groups : [];
                 setGroups(groupsArray);
             } catch (err) {
                 console.error('Ошибка загрузки групп:', err);
                 alert('Не удалось загрузить список групп');
+                groupsArray = [];
                 setGroups([]);
             } finally {
                 setLoadingGroups(false);
             }
-        };
 
-        if (isOpen) {
-            loadGroups();
-        }
-    }, [isOpen]);
-
-    // ——— Синхронизация initialData → form ———
-    useEffect(() => {
-        if (isOpen) {
             if (initialData) {
                 setForm({
                     id: initialData.id ?? null,
                     name: initialData.name || '',
                     price: String(initialData.price || ''),
                     image: initialData.image || '',
-                    groupId: String(initialData.group?.id ?? ''),
+                    groupId: initialData.group?.id ? String(initialData.group.id) : '',
                 });
             } else {
-                setForm({ id: null, name: '', price: '', image: '', groupId: '' });
+                setForm({id: null, name: '', price: '', image: '', groupId: ''});
             }
-        }
+            console.log('Product for edit:', product);
+        };
+
+        initModal();
     }, [isOpen, initialData]);
 
-    // ——— Обработчики ———
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setForm((prev) => ({...prev, [name]: value}));
     };
 
     const uploadImageToMinIO = async (file) => {
@@ -71,16 +64,12 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
         }
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('image', file);
 
         setUploading(true);
         try {
-            // ⚠️ Если у тебя включен authMiddleware — добавь заголовок:
-            // const token = localStorage.getItem('token');
-            // headers: token ? { 'Authorization': `Bearer ${token}` } : {}
             const res = await fetch('/api/upload', {
                 method: 'POST',
-                // headers: {}, // раскомментируй при необходимости
                 body: formData,
             });
 
@@ -103,7 +92,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
         const file = e.target.files?.[0];
         if (file) {
             const url = await uploadImageToMinIO(file);
-            if (url) setForm((prev) => ({ ...prev, image: url }));
+            if (url) setForm((prev) => ({...prev, image: url}));
         }
     };
 
@@ -121,7 +110,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                     if (file) {
                         e.preventDefault();
                         uploadImageToMinIO(file).then((url) => {
-                            if (url) setForm((prev) => ({ ...prev, image: url }));
+                            if (url) setForm((prev) => ({...prev, image: url}));
                         });
                         break;
                     }
@@ -151,12 +140,11 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
         const file = e.dataTransfer.files?.[0];
         if (file && file.type.startsWith('image/')) {
             uploadImageToMinIO(file).then((url) => {
-                if (url) setForm((prev) => ({ ...prev, image: url }));
+                if (url) setForm((prev) => ({...prev, image: url}));
             });
         }
     };
 
-    // ——— эффект пасты ———
     useEffect(() => {
         if (isOpen) {
             document.addEventListener('paste', handlePaste);
@@ -166,14 +154,13 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
         };
     }, [isOpen, handlePaste]);
 
-    // ——— Отправка формы ———
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const payload = {
             name: form.name.trim(),
             price: parseFloat(form.price),
-            image: form.image || null,
+            image: form.image ? form.image.trim().replace(/^"(.*)"$/, '$1') : null,
             groupId: form.groupId ? parseInt(form.groupId, 10) : null,
         };
 
@@ -187,29 +174,25 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
         }
 
         onSubmit(payload, form.id);
-        // onClose вызывается в ProductsManagePage после успешного сохранения
     };
 
-    // ——— Ранний выход: не рендерим ничего, если закрыто ———
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto">
-            {/* Blur background */}
             <div
                 className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
-            {/* Modal */}
             <div className="relative w-full max-w-md mx-4">
-                <div className="bg-white rounded-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto transform transition-all duration-200 scale-100">
+                <div
+                    className="bg-white rounded-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto transform transition-all duration-200 scale-100">
                     <h2 className="text-xl font-bold mb-4">
                         {form.id ? 'Редактировать товар' : 'Добавить товар'}
                     </h2>
 
                     <form onSubmit={handleSubmit}>
-                        {/* Name */}
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-1">Название *</label>
                             <input
@@ -218,13 +201,12 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                 required
                                 value={form.name}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
                                 placeholder="Например: Беспроводные наушники"
                                 disabled={uploading}
                             />
                         </div>
 
-                        {/* Price */}
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-1">Цена (₽) *</label>
                             <input
@@ -235,18 +217,16 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                 required
                                 value={form.price}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none"
                                 disabled={uploading}
                             />
                         </div>
 
-                        {/* Image Upload */}
                         <div className="mb-6">
                             <label className="block text-gray-700 mb-1">
                                 Изображение (вставьте, перетащите или загрузите)
                             </label>
 
-                            {/* Preview */}
                             {form.image && (
                                 <div className="mb-3">
                                     <img
@@ -258,11 +238,10 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                 </div>
                             )}
 
-                            {/* Drop zone */}
                             <div
                                 ref={dropRef}
                                 className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-md cursor-pointer transition-colors min-h-[120px]
-                                    ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
+                                    ${isDragging ? 'border-black bg-blue-50' : 'border-gray-300 hover:border-stone-400'}`}
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
@@ -283,12 +262,12 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                     />
                                 </svg>
                                 <p className="text-sm text-gray-500 text-center">
-                                    Перетащите изображение,<br />
-                                    нажмите для выбора,<br />
+                                    Перетащите изображение,<br/>
+                                    нажмите для выбора,<br/>
                                     или вставьте (<kbd>Ctrl+V</kbd>)
                                 </p>
                                 {uploading && (
-                                    <p className="text-xs text-blue-600 mt-1">Загрузка...</p>
+                                    <p className="text-xs text-black mt-1">Загрузка...</p>
                                 )}
                                 <input
                                     type="file"
@@ -299,7 +278,6 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                 />
                             </div>
 
-                            {/* Fallback: URL */}
                             <div className="mt-2">
                                 <input
                                     name="image"
@@ -307,7 +285,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                     value={form.image}
                                     onChange={handleChange}
                                     placeholder="https://example.com/image.jpg"
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none text-sm"
                                     disabled={uploading}
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
@@ -316,7 +294,6 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                             </div>
                         </div>
 
-                        {/* Group */}
                         <div className="mb-6">
                             <label className="block text-gray-700 mb-1">Группа</label>
                             {loadingGroups ? (
@@ -326,7 +303,7 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                                     name="groupId"
                                     value={form.groupId}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-black focus:outline-none cursor-pointer"
                                     disabled={uploading}
                                 >
                                     <option value="">— Без группы —</option>
@@ -339,19 +316,18 @@ export default function ProductModal({ isOpen, onClose, onSubmit, initialData = 
                             )}
                         </div>
 
-                        {/* Buttons */}
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 cursor-pointer"
                                 disabled={uploading}
                             >
                                 Отмена
                             </button>
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-70"
+                                className="px-4 py-2 bg-black text-white rounded-md cursor-pointer hover:bg-stone-700 focus:ring-2 focus:ring-black focus:outline-none disabled:opacity-70"
                                 disabled={uploading}
                             >
                                 {form.id ? 'Сохранить' : 'Создать'}

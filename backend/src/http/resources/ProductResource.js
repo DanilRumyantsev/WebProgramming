@@ -1,4 +1,4 @@
-import { ProductGroupResource } from './ProductGroupResource.js';
+import {ProductGroupResource} from './ProductGroupResource.js';
 
 export class ProductResource {
     /**
@@ -9,7 +9,8 @@ export class ProductResource {
     }
 
     /**
-     * Формирует массив для JSON-ответа.
+     * Prepare data.
+     *
      * @returns {Object}
      */
     toArray() {
@@ -25,7 +26,8 @@ export class ProductResource {
     }
 
     /**
-     * Для коллекций: ProductResource::collection($products)
+     * For collections.
+     *
      * @param {import('../../models/Product.js').default[]} products
      * @returns {Object[]}
      */
@@ -34,7 +36,8 @@ export class ProductResource {
     }
 
     /**
-     * Response helper: new ProductResource(product).response(res)
+     * Response helper.
+     *
      * @param {import('express').Response} res
      * @param {number} [status=200]
      * @returns {import('express').Response}
@@ -44,12 +47,13 @@ export class ProductResource {
     }
 
     /**
-     * Collection response
+     * Collection response.
+     *
      * @param {import('express').Response} res
      * @param {import('../../models/Product.js').default[]} products
      * @returns {import('express').Response}
      */
     static collectionResponse(res, products) {
-        return res.json({ data: this.collection(products) });
+        return res.json({data: this.collection(products)});
     }
 }

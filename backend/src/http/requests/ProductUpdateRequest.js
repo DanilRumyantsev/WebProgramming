@@ -1,5 +1,10 @@
-// src/Http/Requests/ProductUpdateRequest.js
 export class ProductUpdateRequest {
+    /**
+     * Validate request data.
+     *
+     * @param data
+     * @returns {{}}
+     */
     static validate(data) {
         const errors = {};
 
@@ -24,10 +29,15 @@ export class ProductUpdateRequest {
             if (typeof data.image !== 'string') {
                 errors.image = 'The image must be a URL.';
             } else {
-                try {
-                    new URL(data.image);
-                } catch {
-                    errors.image = 'The image format is invalid.';
+                if (typeof data.image === 'string') {
+                    const isAbsoluteUrl = /^https?:\/\//i.test(data.image);
+                    const isRelativePath = /^\/[^\s]*$/i.test(data.image);
+
+                    if (!isAbsoluteUrl && !isRelativePath) {
+                        errors.image = 'The image must be a valid URL or path.';
+                    }
+                } else {
+                    errors.image = 'The image must be a string.';
                 }
             }
         }
@@ -46,7 +56,6 @@ export class ProductUpdateRequest {
             throw error;
         }
 
-        // Возвращаем ТОЛЬКО переданные поля
         const result = {};
         if ('name' in data) result.name = data.name ? data.name.trim() : null;
         if ('price' in data) result.price = data.price != null ? Number(parseFloat(data.price).toFixed(2)) : null;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import ProductCard from './ProductCard.jsx';
 
 export default function ProductSection(
@@ -46,7 +46,8 @@ export default function ProductSection(
 
             {loading ? (
                 <div className="text-center py-8">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+                    <div
+                        className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
                     <p className="mt-2 text-gray-500">Загрузка...</p>
                 </div>
             ) : error ? (
@@ -64,7 +65,7 @@ export default function ProductSection(
                     <div className={getGridClass()}>
                         {products.length > 0 ? (
                             products.map((product) => (
-                                <ProductCard key={product.id || product.name} product={product} />
+                                <ProductCard key={product.id || product.name} product={product}/>
                             ))
                         ) : showEmpty ? (
                             <p className="col-span-full text-center text-gray-500 py-6">Нет товаров</p>

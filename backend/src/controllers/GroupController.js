@@ -1,10 +1,13 @@
-// src/controllers/GroupController.js
 import {GroupRepository} from "../repositories/GroupRepository.js";
 import {GroupService} from "../services/GroupService.js";
 
 export class GroupController {
     /**
-     * GET /api/groups
+     * Get all product groups.
+     *
+     * @param req
+     * @param res
+     * @returns {Promise<*>}
      */
     static async getAll(req, res) {
         try {
@@ -19,16 +22,19 @@ export class GroupController {
             });
         } catch (err) {
             console.error('[GROUP LIST ERROR]', err);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({message: 'Internal server error'});
         }
     }
 
     /**
-     * POST /api/groups
+     * Create product group.
+     *
+     * @param req
+     * @param res
+     * @returns {Promise<*>}
      */
     static async create(req, res) {
         try {
-            // 🔹 Валидация как в Laravel FormRequest (до сервиса)
             const errors = {};
 
             if (!req.body.name || typeof req.body.name !== 'string') {
@@ -40,7 +46,7 @@ export class GroupController {
                 } else if (name.length > 100) {
                     errors.name = 'The name must not be greater than 100 characters.';
                 } else {
-                    req.body.name = name; // ✅ очищенное значение
+                    req.body.name = name;
                 }
             }
 
@@ -51,7 +57,6 @@ export class GroupController {
                 throw error;
             }
 
-            // ✅ Валидация пройдена — передаём в сервис
             const group = await GroupService.createGroup(req.body);
 
             return res.status(201).json({
@@ -72,27 +77,30 @@ export class GroupController {
                 (err.parent && err.parent.code === 'ER_DUP_ENTRY')) {
                 return res.status(409).json({
                     message: 'The group name has already been taken.',
-                    errors: { name: ['The group name has already been taken.'] },
+                    errors: {name: ['The group name has already been taken.']},
                 });
             }
 
             console.error('[GROUP CREATE ERROR]', err);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({message: 'Internal server error'});
         }
     }
 
     /**
-     * PUT /api/groups/:id
+     * Update product group.
+     *
+     * @param req
+     * @param res
+     * @returns {Promise<*>}
      */
     static async update(req, res) {
         try {
-            const { id } = req.params;
+            const {id} = req.params;
             const groupId = Number(id);
             if (isNaN(groupId) || groupId <= 0) {
-                return res.status(400).json({ message: 'Invalid group ID' });
+                return res.status(400).json({message: 'Invalid group ID'});
             }
 
-            // 🔹 Валидация
             const errors = {};
             if (req.body.name != null) {
                 if (typeof req.body.name !== 'string') {
@@ -118,7 +126,7 @@ export class GroupController {
 
             const group = await GroupService.updateGroup(groupId, req.body);
             if (!group) {
-                return res.status(404).json({ message: 'Group not found' });
+                return res.status(404).json({message: 'Group not found'});
             }
 
             return res.json({
@@ -138,35 +146,39 @@ export class GroupController {
             if (err.name === 'SequelizeUniqueConstraintError') {
                 return res.status(409).json({
                     message: 'The group name has already been taken.',
-                    errors: { name: ['The group name has already been taken.'] },
+                    errors: {name: ['The group name has already been taken.']},
                 });
             }
 
             console.error('[GROUP UPDATE ERROR]', err);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({message: 'Internal server error'});
         }
     }
 
     /**
-     * DELETE /api/groups/:id
+     * Delete product group.
+     *
+     * @param req
+     * @param res
+     * @returns {Promise<*>}
      */
     static async delete(req, res) {
         try {
-            const { id } = req.params;
+            const {id} = req.params;
             const groupId = Number(id);
             if (isNaN(groupId) || groupId <= 0) {
-                return res.status(400).json({ message: 'Invalid group ID' });
+                return res.status(400).json({message: 'Invalid group ID'});
             }
 
             const deleted = await GroupService.deleteGroup(groupId);
             if (!deleted) {
-                return res.status(404).json({ message: 'Group not found' });
+                return res.status(404).json({message: 'Group not found'});
             }
 
-            return res.status(204).send(); // No Content
+            return res.status(204).send();
         } catch (err) {
             console.error('[GROUP DELETE ERROR]', err);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({message: 'Internal server error'});
         }
     }
 }

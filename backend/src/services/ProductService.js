@@ -1,13 +1,10 @@
-// src/services/ProductService.js
-import { ProductRepository } from '../repositories/ProductRepository.js';
+import {ProductRepository} from '../repositories/ProductRepository.js';
 import ProductGroup from "../models/ProductGroup.js";
 
-/**
- * Service for product business logic.
- */
 export class ProductService {
     /**
      * Get all products.
+     *
      * @returns {Promise<Object[]>}
      */
     static async getAllProducts() {
@@ -17,6 +14,7 @@ export class ProductService {
 
     /**
      * Get product by ID.
+     *
      * @param {number} id
      * @returns {Promise<Object>}
      */
@@ -28,15 +26,11 @@ export class ProductService {
 
     /**
      * Create a new product.
+     *
      * @param {Object} data
-     * @param {string} data.name
-     * @param {number} data.price
-     * @param {string|null} [data.image]
-     * @param {string|null} [data.group]
      * @returns {Promise<Object>}
      */
     static async createProduct(data) {
-        // Валидация (можно расширить)
         if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
             throw new Error('Name is required and must be a non-empty string');
         }
@@ -48,7 +42,7 @@ export class ProductService {
             name: data.name.trim(),
             price: Number(data.price.toFixed(2)),
             image: data.image || null,
-            group: data.group || null,
+            groupId: data.groupId || null,
         });
 
         return product.toJSON();
@@ -56,6 +50,7 @@ export class ProductService {
 
     /**
      * Update product by ID.
+     *
      * @param {number} id
      * @param {Object} data
      * @returns {Promise<Object>}
@@ -68,7 +63,7 @@ export class ProductService {
             name: data.name?.trim() || existing.name,
             price: data.price != null ? Number(Number(data.price).toFixed(2)) : existing.price,
             image: data.image !== undefined ? data.image : existing.image,
-            group: data.group !== undefined ? data.group : existing.group,
+            groupId: data.groupId !== undefined ? data.groupId : existing.groupId,
         });
 
         if (!updated) throw new Error('Update failed');
@@ -77,6 +72,7 @@ export class ProductService {
 
     /**
      * Delete product by ID.
+     *
      * @param {number} id
      * @returns {Promise<void>}
      */

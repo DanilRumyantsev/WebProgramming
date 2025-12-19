@@ -1,4 +1,3 @@
-// src/repositories/GroupRepository.js
 import ProductGroup from '../models/ProductGroup.js';
 
 export class GroupRepository {
@@ -20,7 +19,7 @@ export class GroupRepository {
         const [updatedCount, [updatedGroup]] = await ProductGroup.update(
             data,
             {
-                where: { id },
+                where: {id},
                 returning: true,
                 validate: true,
             }
@@ -30,7 +29,7 @@ export class GroupRepository {
 
     static async delete(id) {
         const deletedCount = await ProductGroup.destroy({
-            where: { id },
+            where: {id},
         });
         return deletedCount > 0;
     }

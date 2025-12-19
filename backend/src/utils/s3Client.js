@@ -1,5 +1,4 @@
-// src/utils/s3Client.js
-import { S3Client } from '@aws-sdk/client-s3';
+import {S3Client} from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({
     endpoint: process.env.MINIO_ENDPOINT || 'http://minio:9000',
@@ -8,9 +7,9 @@ const s3Client = new S3Client({
         accessKeyId: process.env.MINIO_ACCESS_KEY || 'shop',
         secretAccessKey: process.env.MINIO_SECRET_KEY || 'securepassword123',
     },
-    forcePathStyle: true, // ← обязательно для MinIO!
+    forcePathStyle: true,
 });
 
 const BUCKET_NAME = process.env.MINIO_BUCKET || 'uploads';
 
-export { s3Client, BUCKET_NAME };
+export {s3Client, BUCKET_NAME};

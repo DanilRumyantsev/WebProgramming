@@ -1,8 +1,7 @@
-// src/components/ui/Button.jsx
 export default function Button({
                                    type = 'button',
-                                   variant = 'primary', // 'primary', 'secondary', 'danger'
-                                   size = 'md', // 'sm', 'md', 'lg'
+                                   variant = 'primary',
+                                   size = 'md',
                                    disabled,
                                    children,
                                    ...props

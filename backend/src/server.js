@@ -6,5 +6,5 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Backend is running on http://localhost:${PORT}`);
+    console.log(`Backend is running on http://localhost:${PORT}`);
 });

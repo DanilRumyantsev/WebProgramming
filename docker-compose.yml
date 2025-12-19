@@ -1,4 +1,3 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
@@ -12,11 +11,11 @@ services:
       MYSQL_USER: shopuser
       MYSQL_PASSWORD: shoppass
     ports:
-      - "3306:3306"  # ← если порт занят — смени на 3307:3306
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "shopuser", "-pshoppass"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "shopuser", "-pshoppass" ]
       timeout: 20s
       retries: 10
 
@@ -44,8 +43,8 @@ services:
     image: minio/minio:latest
     container_name: minio
     ports:
-      - "9002:9000"   # API
-      - "9003:9001"   # Console UI
+      - "9002:9000"
+      - "9003:9001"
     environment:
       MINIO_ROOT_USER: shop
       MINIO_ROOT_PASSWORD: securepassword123

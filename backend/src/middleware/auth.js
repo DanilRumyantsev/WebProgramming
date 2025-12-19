@@ -1,14 +1,8 @@
 // src/middleware/auth.js
 
-import { verifyToken } from '../utils/jwt.js';
+import {verifyToken} from '../utils/jwt.js';
 
 export const authMiddleware = (req, res, next) => {
-    console.log('\n=== AUTH MIDDLEWARE DEBUG ===');
-    console.log('🔹 req.cookies:', req.cookies);
-    console.log('🔹 Authorization header:', req.headers.authorization);
-    console.log('🔹 URL:', req.url);
-    console.log('🔹 Method:', req.method);
-    console.log('=============================\n');
     let token = null;
 
     // 1. Заголовок Authorization: Bearer (для Postman, мобильных клиентов)
@@ -23,12 +17,12 @@ export const authMiddleware = (req, res, next) => {
     }
 
     if (!token) {
-        return res.status(401).json({ message: 'Token required' });
+        return res.status(401).json({message: 'Token required'});
     }
 
     const payload = verifyToken(token);
     if (!payload) {
-        return res.status(401).json({ message: 'Invalid or expired token' });
+        return res.status(401).json({message: 'Invalid or expired token'});
     }
 
     req.user = payload;

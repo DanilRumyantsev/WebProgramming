@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import Header from '../components/layout/Header.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import Input from '../components/ui/Input.jsx';
@@ -15,42 +15,38 @@ export default function ProductCreatePage() {
         image: '',
         groupId: '',
     });
-    const [groups, setGroups] = useState([]);        // ← для <Select />
+    const [groups, setGroups] = useState([]);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [submitError, setSubmitError] = useState(null);
 
-    // ✅ Загрузка групп через API — как в GroupListPage
     useEffect(() => {
         const loadGroups = async () => {
             try {
                 const res = await fetch('http://localhost:5001/api/groups', {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: {'Content-Type': 'application/json'}
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                // Преобразуем в формат { value, label } для Select
                 setGroups(data.groups.map(g => ({
                     value: g.id,
                     label: g.name
                 })));
             } catch (err) {
                 console.error('Failed to load groups:', err);
-                // Можно показать ошибку, но для создания товара — не критично
             }
         };
         loadGroups();
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setFormData(prev => ({...prev, [name]: value}));
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors(prev => ({...prev, [name]: null}));
         }
     };
 
-    // ✅ Отправка товара — только через fetch к /api/products
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
@@ -69,7 +65,6 @@ export default function ProductCreatePage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // + Authorization, если нужна аутентификация
                 },
                 body: JSON.stringify(payload),
             });
@@ -87,7 +82,7 @@ export default function ProductCreatePage() {
 
             const product = await res.json();
             navigate('/products', {
-                state: { success: `Товар "${product.name}" создан` }
+                state: {success: `Товар "${product.name}" создан`}
             });
 
         } catch (err) {
@@ -100,7 +95,7 @@ export default function ProductCreatePage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            <Header />
+            <Header/>
             <main className="flex-grow container mx-auto px-4 py-8">
                 <div className="max-w-2xl mx-auto">
                     <button
@@ -179,7 +174,7 @@ export default function ProductCreatePage() {
                     </div>
                 </div>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

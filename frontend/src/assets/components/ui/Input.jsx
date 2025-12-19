@@ -1,5 +1,4 @@
-// src/components/ui/Input.jsx
-export default function Input({ label, error, ...props }) {
+export default function Input({label, error, ...props}) {
     return (
         <div className="mb-4">
             {label && (

@@ -1,5 +1,4 @@
-// src/components/ui/Select.jsx
-export default function Select({ label, options, error, ...props }) {
+export default function Select({label, options, error, ...props}) {
     return (
         <div className="mb-4">
             {label && (

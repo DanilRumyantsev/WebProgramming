@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { signToken } from '../utils/jwt.js';
-import { UserRepository } from '../repositories/UserRepository.js';
+import {signToken} from '../utils/jwt.js';
+import {UserRepository} from '../repositories/UserRepository.js';
 
 export class AuthService {
     /**
@@ -32,17 +32,15 @@ export class AuthService {
             password: hashedPassword,
         });
 
-        // ✅ Генерируем токен — но НЕ возвращаем его
-        const token = signToken({ id: user.id, email: user.email });
+        const token = signToken({id: user.id, email: user.email});
 
-        // ✅ Возвращаем НЕ { token, user }, а просто данные + токен для контроллера
         return {
             user: {
                 id: user.id,
                 email: user.email,
                 role: user.role,
             },
-            token, // ← контроллер его использует для куки
+            token,
         };
     }
 
@@ -70,17 +68,15 @@ export class AuthService {
             throw new Error('Invalid credentials');
         }
 
-        // ✅ Генерируем токен — но НЕ возвращаем его
-        const token = signToken({ id: user.id, email: user.email });
+        const token = signToken({id: user.id, email: user.email});
 
-        // ✅ Возвращаем НЕ { token, user }, а просто данные + токен для контроллера
         return {
             user: {
                 id: user.id,
                 email: user.email,
                 role: user.role,
             },
-            token, // ← контроллер его использует для куки
+            token,
         };
     }
 

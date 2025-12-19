@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {useAuth} from "../../../hooks/useAuth.js";
 
 export default function Header() {
-    const { profile, logout } = useAuth();
+    const {profile, logout} = useAuth();
 
     return (
         <header className="bg-white shadow-sm sticky top-0 z-40">
@@ -50,7 +50,6 @@ export default function Header() {
                     </a>
                 </div>
 
-                {/* Аватар / Профиль + Настройки */}
                 <div className="flex items-center space-x-4">
                     {profile ? (
                         <>

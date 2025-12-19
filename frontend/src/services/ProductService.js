@@ -1,12 +1,11 @@
-// src/services/ProductService.js
-const API_BASE = '/api'; // проксируется в vite.config.js → localhost:5001
+const API_BASE = '/api';
 
 export const ProductService = {
     async getAll() {
         const res = await fetch(`${API_BASE}/products`);
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const data = await res.json();
-        return data.data || data; // т.к. бэкенд отдаёт { data: [...] }
+        return data.data || data;
     },
 
     async getById(id) {
@@ -22,7 +21,7 @@ export const ProductService = {
     async create(productData) {
         const res = await fetch(`${API_BASE}/products`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(productData),
         });
         if (!res.ok) {
@@ -30,7 +29,8 @@ export const ProductService = {
             try {
                 const err = await res.json();
                 message = err.message || err.errors?.name?.[0] || err.errors?.price?.[0] || message;
-            } catch {}
+            } catch {
+            }
             throw new Error(message);
         }
         return res.json();
@@ -39,7 +39,7 @@ export const ProductService = {
     async update(id, productData) {
         const res = await fetch(`${API_BASE}/products/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(productData),
         });
         if (!res.ok) {
@@ -47,14 +47,15 @@ export const ProductService = {
             try {
                 const err = await res.json();
                 message = err.message || Object.values(err.errors || {})[0]?.[0] || message;
-            } catch {}
+            } catch {
+            }
             throw new Error(message);
         }
         return res.json();
     },
 
     async delete(id) {
-        const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${API_BASE}/products/${id}`, {method: 'DELETE'});
         if (!res.ok) {
             if (res.status === 404) throw new Error('Товар не найден');
             throw new Error(`HTTP ${res.status}: Не удалось удалить`);
