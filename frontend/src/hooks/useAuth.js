@@ -10,7 +10,7 @@ export function useAuth() {
     const checkAuth = async () => {
         try {
             const res = await axiosInstance.get('/auth/profile');
-            setProfile(res.data);
+            setProfile(res.data.profile);
             setMessage('');
         } catch (err) {
             setProfile(null);

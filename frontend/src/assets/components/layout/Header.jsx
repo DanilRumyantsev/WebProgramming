@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import {useAuth} from "../../../hooks/useAuth.js";
+import {useAuth} from "@/hooks/useAuth.js";
 
 export default function Header() {
     const {profile, logout} = useAuth();
@@ -35,27 +35,29 @@ export default function Header() {
                     </div>
                 </div>
 
-                <div className="flex space-x-2">
-                    <a
-                        href="/groups"
-                        className="px-4 py-2 bg-gray-700 text-white rounded-md transition hover:bg-gray-800"
-                    >
-                        Управление группами
-                    </a>
-                    <a
-                        href="/products/manage"
-                        className="px-4 py-2 bg-black text-white rounded-md transition hover:bg-stone-700"
-                    >
-                        Управление товарами
-                    </a>
-                </div>
+                {profile?.role === 'admin' && (
+                    <div className="flex space-x-2">
+                        <Link
+                            to="/groups"
+                            className="px-4 py-2 bg-gray-700 text-white rounded-md transition hover:bg-gray-800"
+                        >
+                            Управление группами
+                        </Link>
+                        <Link
+                            to="/products/manage"
+                            className="px-4 py-2 bg-black text-white rounded-md transition hover:bg-stone-700"
+                        >
+                            Управление товарами
+                        </Link>
+                    </div>
+                )}
 
                 <div className="flex items-center space-x-4">
                     {profile ? (
                         <>
                             <button
                                 onClick={logout}
-                                className="text-gray-600 hover:text-gray-900 transition"
+                                className="text-gray-600 hover:text-gray-900 transition cursor-pointer"
                                 title="Выйти"
                             >
                                 <svg
